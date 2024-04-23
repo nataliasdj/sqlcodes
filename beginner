@@ -1,0 +1,69 @@
+-- Use AdventureWorks2022
+-- 1. filter based on condition - it uses WHERE
+-- 2. alias to name a new column (AS)
+-- 3. order of operation is not as per lines but FROM->WHERE->SELECT'
+-- 4. if you wanna compact it use IN (for or)
+-- 5. between literally between ex 1 to 50 use BETWEEN 1 AND 50
+-- 6. if you wanna match a particular pattern - use LIKE and usually helps with %
+-- 7. ORDER BY for sorting ascending or descending
+-- 8. GROUP BY for ex. if salesorder A have multiple entries, u can just join them together
+
+SELECT DISTINCT BusinessEntityID,JobTitle --if want no duplicates
+FROM HumanResources.Employee
+--WHERE JobTitle = 'Research and Development Manager'
+WHERE BusinessEntityID < 3;
+
+SELECT SubTotal,TaxAmt, SubTotal + TaxAmt AS SubTotalWithTaxAmt
+FROM Purchasing.PurchaseOrderHeader;
+
+SELECT SubTotal,TaxAmt, SubTotal / TaxAmt AS divisiontotaldividtax
+FROM Purchasing.PurchaseOrderHeader
+WHERE TaxAmt > 0; --incase arithmetic x / 0 thing
+
+--so for point 3, this does not work
+SELECT SubTotal,TaxAmt, SubTotal / TaxAmt AS divisiontotaldividtax
+FROM Purchasing.PurchaseOrderHeader
+--WHERE divisiontotaldividtax > 50; -- fail bcs of order of operation
+-- but this does
+WHERE  SubTotal / TaxAmt > 50; 
+
+SELECT FirstName,MiddleName,LastName, FirstName + ' '+MiddleName + ' ' +LastName AS FullName
+FROM Person.Person
+WHERE MiddleName IS NOT NULL;
+
+--POINT 4
+SELECT *
+FROM HumanResources.Employee
+--WHERE JobTitle = 'Design Engineer' OR JobTitle = 'Research and Development Manager'
+--WHERE MaritalStatus = 'S' AND Gender = 'F';
+--WHERE JobTitle IN ('Design Engineer','Research and Development Manager');
+WHERE BusinessEntityID IN (1,5,10,15)
+
+--POINT 5
+SELECT *
+FROM HumanResources.Employee
+WHERE BusinessEntityID BETWEEN 1 AND 15
+
+-- Point 6
+SELECT *
+FROM Person.StateProvince
+--WHERE Name LIKE 'Ala%'; --if u want some name starting with ala
+--WHERE Name LIKE '%o'; --name ending with o
+WHERE Name LIKE 'Al____'; --each _ represents 1 letter= 4 underscore means want a name that is 6 characters (added with the 2 AL)
+
+--point 7
+SELECT City, PostalCode
+From Person.Address
+ORDER BY City DESC; --by default ascending just del the DESC
+
+SELECT FirstName,LastName, MiddleName
+FROM Person.Person
+WHERE MiddleName IS NOT NULL
+ORDER BY FirstName DESC, LastName ASC; --it is still their name cuman i guess group
+-- so bascially it orders the firstname and in all the ex. ZOE, the lastname will be ordered again in the ZOE firstname group
+
+--Point 8 - better idea if u execute the first 2 lines, then execute all 3
+SELECT SalesOrderId, SUM(UnitPrice) AS TOTALUNITPRICEPERSALES
+FROM sales.SalesOrderDetail
+GROUP BY SalesOrderID
+--there are more functions too, there's AVG(), COUNT() how much of that item, MAX(),MIN()
