@@ -1,12 +1,15 @@
 -- Use AdventureWorks2022
 -- 1. filter based on condition - it uses WHERE
 -- 2. alias to name a new column (AS)
--- 3. order of operation is not as per lines but FROM->WHERE->SELECT'
+-- 3. order of operation is not as per lines but as per 
+		--FROM->WHERE->GROUP BY -> HAVING -> SELECT -> ORDER BY
 -- 4. if you wanna compact it use IN (for or)
 -- 5. between literally between ex 1 to 50 use BETWEEN 1 AND 50
 -- 6. if you wanna match a particular pattern - use LIKE and usually helps with %
 -- 7. ORDER BY for sorting ascending or descending
 -- 8. GROUP BY for ex. if salesorder A have multiple entries, u can just join them together
+-- 9. HAVING is like atm, replaceing WHERE with an agregate function + the order in which you have to write the keywords is
+		-- SELECT -> FROM -> WHERE -> GROUP BY -> HAVING -> ORDER BY
 
 SELECT DISTINCT BusinessEntityID,JobTitle --if want no duplicates
 FROM HumanResources.Employee
@@ -67,3 +70,32 @@ SELECT SalesOrderId, SUM(UnitPrice) AS TOTALUNITPRICEPERSALES
 FROM sales.SalesOrderDetail
 GROUP BY SalesOrderID
 --there are more functions too, there's AVG(), COUNT() how much of that item, MAX(),MIN()
+
+--SELECT FirstName,MiddleName,LastName, FirstName + ' '+MiddleName + ' ' +LastName AS FullName
+--Also concat can ignore NULL
+SELECT FirstName,MiddleName,LastName, 
+	CONCAT(FirstName, ' ', MiddleName, ' ',LastName) AS FullName
+FROM Person.Person
+
+--SELECT FirstName, LEN(FirstName) AS LENOFNAME
+--SELECT FirstName, LEFT(FirstName,2) AS Extracted--extract fixed num of char
+--can do RIGHT as well to extract
+SELECT FirstName, SUBSTRING(FirstName,3,4) AS Extract_substring -- no 0 index ya, extract from 3rd position to length of 4
+FROM Person.Person;
+
+-- MONTH() and YEAR() is also possible
+SELECT SalesOrderID,OrderDate, DAY(OrderDate) AS theDay --extract day part of the date
+FROM Sales.SalesOrderHeader;
+
+--extract system date without timezone
+SELECT CURRENT_TIMESTAMP;
+
+-- Point 9
+SELECT SalesOrderId, SUM(UnitPrice) AS TOTALUNITPRICEPERSALES -- this sum is called agregate func
+FROM sales.SalesOrderDetail
+WHERE SalesOrderID > 50000
+--you cant put WHERE SUM(UnitPrice) > 500 -- aka where and agregate func cant be in same line - it must be in a subquery or use HAVING
+GROUP BY SalesOrderID
+HAVING SUM(UnitPrice) > 500 -- HAVING must be below GROUP BY
+ORDER BY SalesOrderID DESC;
+
