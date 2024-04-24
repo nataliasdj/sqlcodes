@@ -18,6 +18,11 @@
 -- 12. JOIN - combine multiple column (also JOIN and INNER JOIN) is same
 -- 13. LEFT JOIN = LEFT OUTER JOIN & RIGHT JOIN = RIGHT OUTER JOIN, the outer is just literally the same
 -- 14. FULL JOIN - combination of left and right literally, left on top right on bottom
+-- 15. Create table
+-- 16. INSERT
+-- 17. UPDATE & Alter - if alter - change struct of table or aka 
+--		add or delete column/list of column and change datatype
+-- 18. DELETE - delete record/row from the table (use the select * from pt 16 if you wanna see table)
 
 
 SELECT DISTINCT BusinessEntityID,JobTitle --if want no duplicates
@@ -195,4 +200,55 @@ FROM Person.Person p --left table
 FULL OUTER JOIN
 Person.BusinessEntityAddress bus --right
 ON p.BusinessEntityID = bus.BusinessEntityID
+
+-- Point 15
+--create empty database
+CREATE DATABASE Covid19; --execute and then refresh and look at your databases
+--not yet any user table
+--CREATE TABLE TableName (col1 datatype1, col2 datatype2,...) -- table stmnt syntax
+CREATE TABLE covidStats -- for this to work need to go to Covid19 instead of master
+(covidID INT IDENTITY,
+covidDate datetime, 
+dailyConfirmedCases INT, 
+dailyDeaths smallint,
+country varchar(25), 
+covidFlag bit, -- if no mistaken it means if yes have covid in country or no
+totalLoss Money
+); --identity auto increment field, look at data type
+
+-- Point 16 INSERT - remember dont execute all the time, if continue insert then continue to add
+SELECT * FROM dbo.covidStats
+--INSERT INTO TableName VALUES (List of value);--insert syntax
+--INSERT INTO TableName(list of column) VALUES (List of values) --if only some column
+INSERT INTO dbo.covidStats VALUES('4/25/2020',1000,10,'USA',1,10000000); --no need covidid since identity
+INSERT INTO dbo.covidStats(coviddate,country) VALUES ('4/25/2020','Tuvalu');-- cannot pass for covidid actually
+--if want multiple records in a single line
+INSERT INTO dbo.covidStats(covidDate,dailyConfirmedCases,dailyDeaths, country, covidFlag,totalLoss)
+VALUES
+('4/25/2020',800,6,'Brazil',1,500000),
+('4/25/2020',750,5,'Russia',1,550000),
+('4/25/2020',0,0,'Palau',1,5000);
+
+-- Point 17 Update & ALTER
+--UPDATE TableName SET col1=val, col2 = val2,.... WHERE Condition; --syntax, if no where then will update all
+UPDATE dbo.covidStats SET covidFlag=0, totalLoss = 100
+WHERE covidid = 2; 
+
+ALTER TABLE covidStats -- add continent table
+ADD continent char(12);
+
+ALTER TABLE covidStats
+ALTER Column continent varchar(15); --change datatype
+
+ALTER TABLE covidStats -- delete the continent column
+DROP Column continent;
+
+-- Point 18 DELETE
+DELETE FROM covidstats WHERE country = 'Brazil' AND covidFlag = 1; -- deletes the row that meets this condition
+DELETE TOP(2) FROM covidStats --delete top 2 row of covidstats
+DELETE TOP(10) PERCENT FROM covidStats--delete top 10 percent row from covidstats
+--DELETE FROM covidstats -- deletes everything of covidstats
+
+DROP TABLE covidStats -- literally deleted the whole table
+
 
