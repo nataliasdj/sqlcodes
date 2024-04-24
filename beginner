@@ -10,6 +10,14 @@
 -- 8. GROUP BY for ex. if salesorder A have multiple entries, u can just join them together
 -- 9. HAVING is like atm, replaceing WHERE with an agregate function + the order in which you have to write the keywords is
 		-- SELECT -> FROM -> WHERE -> GROUP BY -> HAVING -> ORDER BY
+-- 10. subquery
+-- 11. UNION & UNION ALL -combine row/record from multiple tables to a single select - 
+--		UNION remove duplicate & datatype must be similar
+--		UNION ALL doesnt remove duplicate
+-- 12. JOIN - combine multiple column (also JOIN and INNER JOIN) is same
+-- 13. LEFT JOIN = LEFT OUTER JOIN & RIGHT JOIN = RIGHT OUTER JOIN, the outer is just literally the same
+-- 14. FULL JOIN - combination of left and right literally, left on top right on bottom
+
 
 SELECT DISTINCT BusinessEntityID,JobTitle --if want no duplicates
 FROM HumanResources.Employee
@@ -98,4 +106,92 @@ WHERE SalesOrderID > 50000
 GROUP BY SalesOrderID
 HAVING SUM(UnitPrice) > 500 -- HAVING must be below GROUP BY
 ORDER BY SalesOrderID DESC;
+
+--  POINT 10 Subquery
+-- rn the execute the first 2, it will give 2 diff tables where PurchaseOrderID is present in both table
+SELECT * FROM Purchasing.PurchaseOrderHeader;
+SELECT * FROM Purchasing.PurchaseOrderDetail WHERE PurchaseOrderDetailID > 5;
+
+SELECT PurchaseOrderID, EmployeeID FROM Purchasing.PurchaseOrderHeader
+WHERE PurchaseOrderID IN
+(
+ SELECT PurchaseOrderID FROM Purchasing.PurchaseOrderDetail WHERE PurchaseOrderDetailID > 5 -- cannot use * (IN expects 1 column)
+)
+--basically means if puchaseorderdetailid > 5 in the 2nd table, spit out the purchaseorderid and employeeid from table 1
+
+
+SELECT PurchaseOrderID, EmployeeID FROM Purchasing.PurchaseOrderHeader
+WHERE PurchaseOrderID IN
+(
+ SELECT PurchaseOrderID FROM Purchasing.PurchaseOrderDetail WHERE PurchaseOrderDetailID = 5 -- cannot use * (IN expects 1 column)
+)
+--in relation, so if you just execute the inner query, it will give 1 purchaseorderid that is 4,
+-- so if you do 
+SELECT PurchaseOrderID, EmployeeID FROM Purchasing.PurchaseOrderHeader
+WHERE PurchaseOrderID = 4
+
+--or you can also do instead of IN
+SELECT PurchaseOrderID, EmployeeID FROM Purchasing.PurchaseOrderHeader
+WHERE PurchaseOrderID =
+(
+ SELECT PurchaseOrderID FROM Purchasing.PurchaseOrderDetail WHERE PurchaseOrderDetailID = 5 -- cannot use * (IN expects 1 column)
+)
+-- END OF SUBQUERY
+
+-- Point 11
+-- the customerID will also combine with businessentityID, into 1 column, the title will be businessentityid
+-- run first 3 then run the rest without the first 3
+SELECT BusinessEntityID FROM HumanResources.Employee
+SELECT BusinessEntityID FROM Person.Person
+SELECT CustomerID FROM Sales.Customer
+
+SELECT BusinessEntityID FROM HumanResources.Employee
+  UNION ALL
+SELECT BusinessEntityID FROM Person.Person
+  UNION ALL
+SELECT CustomerID FROM Sales.Customer;
+
+-- Point 12, 
+--the purchaseOrderID should match
+SELECT PurchaseOrderID,PurchaseOrderDetailID FROM Purchasing.PurchaseOrderDetail
+SELECT PurchaseOrderID,OrderDate FROM Purchasing.PurchaseOrderHeader
+
+SELECT pod.PurchaseOrderID,pod.PurchaseOrderDetailID, poh.OrderDate
+FROM Purchasing.PurchaseOrderDetail pod --pod is the alias (so u know which table u get from)
+  INNER JOIN --or JOIN is same
+Purchasing.PurchaseOrderHeader poh
+ON pod.PurchaseOrderID = poh.PurchaseOrderID -- all the matching where the one in POD = POH purchaseorderid
+
+-- Point 13
+SELECT * FROM Person.Person
+SELECT * FROM Person.BusinessEntityAddress
+
+SELECT p.BusinessEntityID, p.FirstName, p.LastName, bus.BusinessEntityID, bus.AddressID
+FROM Person.Person p
+  INNER JOIN
+Person.BusinessEntityAddress bus
+ON p.BusinessEntityID = bus.BusinessEntityID
+
+-- if you want all the left table (irrespective if match or no) and only the matching right table
+-- if no match then the right table is null - try execute the inner join up if you dont understand
+SELECT p.BusinessEntityID, p.FirstName, p.LastName, bus.BusinessEntityID, bus.AddressID
+FROM Person.Person p --left table
+  LEFT JOIN
+Person.BusinessEntityAddress bus --right
+ON p.BusinessEntityID = bus.BusinessEntityID
+
+--same but opposite and somehow the result, the matching are at the top and non matching - aka the NULL is bottom
+-- prolly cuz of null in the first column
+SELECT p.BusinessEntityID, p.FirstName, p.LastName, bus.BusinessEntityID, bus.AddressID
+FROM Person.Person p --left table
+  RIGHT JOIN
+Person.BusinessEntityAddress bus --right
+ON p.BusinessEntityID = bus.BusinessEntityID
+
+-- has both left and right join together
+SELECT p.BusinessEntityID, p.FirstName, p.LastName, bus.BusinessEntityID, bus.AddressID
+FROM Person.Person p --left table
+FULL OUTER JOIN
+Person.BusinessEntityAddress bus --right
+ON p.BusinessEntityID = bus.BusinessEntityID
 
