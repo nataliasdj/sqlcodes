@@ -1,3 +1,4 @@
+-- https://www.udemy.com/course/complete-microsoft-sql-server-beginner-expert/learn/lecture/22157326#overview
 -- Use AdventureWorks2022
 -- 1. filter based on condition - it uses WHERE
 -- 2. alias to name a new column (AS)
