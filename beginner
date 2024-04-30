@@ -11,6 +11,7 @@
 -- 8. GROUP BY for ex. if salesorder A have multiple entries, u can just join them together
 -- 9. HAVING is like atm, replaceing WHERE with an agregate function + the order in which you have to write the keywords is
 		-- SELECT -> FROM -> WHERE -> GROUP BY -> HAVING -> ORDER BY
+		The HAVING clause is used with aggregate functions like COUNT, etc which require grouping - so it must have GROUP BY
 -- 10. subquery
 -- 11. UNION & UNION ALL -combine row/record from multiple tables to a single select - 
 --		UNION remove duplicate & datatype must be similar
